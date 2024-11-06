@@ -12,7 +12,7 @@ void main()
     printf("\nВведите количество переводов трех сотрудников: ");
     scanf_s("%d %d %d", &translations1, &translations2, &translations3);
 
-    int avgTranslations = (translations1 + translations2 + translations3) / 3;
+    float avgTranslations = (translations1 + translations2 + translations3) / 3.0;
 
     int minTranslations = translations1;
     int maxTranslations = translations1;
@@ -23,7 +23,7 @@ void main()
     if (translations3 < minTranslations) minTranslations = translations3;
     if (translations3 > maxTranslations) maxTranslations = translations3;
 
-    printf("\nСреднее количество переводов: %d\n", avgTranslations);
+    printf("\nСреднее количество переводов: %.2f\n", avgTranslations);
     printf("Минимальное количество переводов: %d\n", minTranslations);
     printf("Максимальное количество переводов: %d\n", maxTranslations);
 }
