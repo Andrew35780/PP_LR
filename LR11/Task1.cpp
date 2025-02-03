@@ -28,12 +28,20 @@ void main()
 	int evenProduct = 1;
 	int evenSum = 0, evenCount = 0;
 	float evenAverage;
+	int multiplesOfThreeCount = 0;
+
+	int* arrayMultiplesOfThree = (int*)malloc(sizeof(int) * n);
+	if (!arrayMultiplesOfThree) exit(-1);
 
 	for (i = 0; i < n; i++) {
 		if (i % 2 == 0) {
 			evenProduct *= array[i];
 			evenSum += array[i];
 			evenCount++;
+		}
+		if (array[i] % 3 == 0) {
+			arrayMultiplesOfThree[multiplesOfThreeCount] = array[i];
+			multiplesOfThreeCount++;
 		}
 	}
 	printf("\n");
@@ -42,18 +50,6 @@ void main()
 
 	printf("\n Произведение элементов с четными индексами = %d \n", evenProduct);
 	printf("\n Среднее арифметическое элементов с четными индексами = %.2f \n", evenAverage);
-
-	int multiplesOfThreeCount = 0;
-
-	int* arrayMultiplesOfThree = (int*)malloc(sizeof(int) * n);
-	if (!arrayMultiplesOfThree) exit(-1);
-
-	for (i = 0; i < n; i++) {
-		if (array[i] % 3 == 0) {
-			arrayMultiplesOfThree[multiplesOfThreeCount] = array[i];
-			multiplesOfThreeCount++;
-		}
-	}
 
 	printf("\n Вывод элементов массива чисел кратных 3: \n");
 	for (i = 0; i < multiplesOfThreeCount; i++) printf("%4d", arrayMultiplesOfThree[i]);

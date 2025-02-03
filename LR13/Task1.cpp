@@ -8,7 +8,7 @@ void InputMatrix(int** matrix, int* rows, int* columns);
 void PrintMatrix(int** matrix, int* rows, int* columns, const char* matrixTitle = "исходной");
 void FreeMatrixMemory(int** matrix, int* rows, int* columns);
 void CalculateAndPrintMatrixSums(int** matrix, int* rows, int* columns, bool const isRowSum);
-
+/*
 void main()
 {
 	setlocale(LC_CTYPE, "");
@@ -126,3 +126,4 @@ void CalculateAndPrintMatrixSums(int** matrix, int* rows, int* columns, bool con
 		}
 	}
 }
+*/

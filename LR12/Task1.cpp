@@ -33,7 +33,7 @@ void main()
 	for (i = 0; i < n; i++) {
 		if (array[i] > 0)
 			processedElement = sqrt(array[i]);
-		else if (array[i] < 0)
+		else
 			processedElement = pow(array[i], 2);
 
 		if (processedElement < minElement)
