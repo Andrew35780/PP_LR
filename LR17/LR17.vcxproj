@@ -128,10 +128,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Example.cpp" />
+    <ClCompile Include="ExampleTask.cpp" />
     <ClCompile Include="Task.cpp" />
+    <ClCompile Include="TaskOldVers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="file.txt" />
+    <Text Include="simple_file.txt" />
+    <Text Include="sorted_file.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Task.h" />
