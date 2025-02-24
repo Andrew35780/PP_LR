@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include "../LR16/Task.h"
 
 #define ERROR_FILE_OPPENING -1;
@@ -14,7 +13,9 @@ typedef enum {
 	FinishWork = 5,
 } operation;
 
-void fill_game_data(game_t* game);
+//void fill_game_data(game_t* game);
 int print_data_from_file(const char* file_name);
 //int write_data_to_file(const char* file_name, const game_t game, const char* mode);
-int write_data_to_file(const char* file_name, const char* mode);
+//int write_data_to_file(const char* file_name, const char* mode);
+
+void write_data_to_file_simple();

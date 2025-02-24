@@ -1,8 +1,9 @@
 #include "Task.h"
 
 //int select_game_by_year(const char* orig_file_name, const char* new_file_name);
-void write_data_to_file_simple();
+void write_data_to_file_simple(const char* mode);
 int select_game_by_year_simple(const char* orig_file_name, const char* new_file_name);
+void print_game_disc(const game_t disc);
 
 int main()
 {
@@ -15,12 +16,11 @@ int main()
 		"RPG",
 		"18+",
 		"DVD",
+		{2015, 8, 15},
 		"W3-PC-2015",
 		1000.0,
-		0.0,
+		0,
 		10,
-		2015,
-		false
 	};
 
 	game_t game2 = {
@@ -28,14 +28,14 @@ int main()
 		"PS4",
 		"Shooter",
 		"18+",
-		"Blu-Ray",
+		"Blue-Ray",
+		{2013, 5, 10},
 		"BI-PS4-2013",
 		500.0,
 		30.0,
 		5,
-		2013,
-		true
 	};
+
 	//game_t game3; //game_temp for writing in cycle
 	//fill_game_data(&game3);
 
@@ -58,14 +58,15 @@ int main()
 		{
 		case WriteData:
 			//write_data_to_file("file.txt", "w");
-			write_data_to_file_simple();
+			write_data_to_file_simple("w");
 			break;
 		case AddData:
-			write_data_to_file("file.txt", "a");
+			//write_data_to_file("simple_file.txt", "a");
+			write_data_to_file_simple("a");
 			break;
 		case ReadData:
 			system("cls");
-			print_data_from_file("file.txt");
+			print_data_from_file("simple_file.txt");
 			printf("\n");
 			system("pause");
 			break;
@@ -88,7 +89,7 @@ int main()
 	return 0;
 }
 
-
+/*
 int select_game_by_year(const char* orig_file_name, const char* new_file_name) {
 	FILE* origFile;
 	FILE* newFile;
@@ -169,7 +170,7 @@ int select_game_by_year(const char* orig_file_name, const char* new_file_name) {
 
 	// Если были отобраны игры
 	return game_found;
-}
+}*/
 
 int select_game_by_year_simple(const char* orig_file_name, const char* new_file_name) {
 	FILE* origFile;
@@ -193,53 +194,30 @@ int select_game_by_year_simple(const char* orig_file_name, const char* new_file_
 	int game_found = 0;
 
 	// Читаем игры из исходного файла
-	while (fscanf_s(origFile,
-		"%30s\n"
-		"%50s\n"
-		"%50s\n"
-		"%10s\n"
-		"%hu\n"
-		"%30s\n"
-		"%f\n"
-		"%f\n"
-		"%u\n",
-		game.name, game.platform, game.genre, game.age_rating,
-		&game.release_year, game.article, &game.price, &game.discount,
-		&game.count) == 9) {
+	while (!feof(origFile))
+	{
+		char price_str[20], date_str[12];
 
-		printf("Что-то прочитали...");
+		fscanf(origFile, "%s %s %s %s %s %s %s %f %hu %u", 
+			game.name, game.platform, game.genre, game.age_rating, 
+			game.format, date_str, game.article, &game.price, 
+			&game.discount, &game.count); // Почему такой порядок??
+
+		printf("\n+----------------------+-----------+-------------+-----------+------------+-----------+---------+-----------+----------+----------------+\n");
+
+		// Преобразуем строку с датой в структуру
+		sscanf_s(date_str, "%hu-%hu-%hu", &game.release_date.day, &game.release_date.month, &game.release_date.year);
+
+		print_game_disc(game);
 		// Проверяем, если год релиза игры больше указанного
-		if (game.release_year > sort_year) {
-			game_found = 1;
+		
 
 			// Записываем отфильтрованные игры в новый файл
-			fprintf(newFile, "+----------------------+--------------------------------+\n");
-			fprintf(newFile, "| %-20s | %-30s |\n", "Название", game.name);
-			fprintf(newFile, "| %-20s | %-30s |\n", "Платформа", game.platform);
-			fprintf(newFile, "| %-20s | %-30hu |\n", "Год выпуска", game.release_year);
-			fprintf(newFile, "| %-20s | %-30.2f руб. |\n", "Цена", game.price);
-			fprintf(newFile, "| %-20s | %-30s |\n", "Состояние", game.is_used ? "Б/У" : "Новый");
-			fprintf(newFile, "| %-20s | %-30u |\n", "Количество", game.count);
-			fprintf(newFile, "| %-20s | %-30s |\n", "Жанр", game.genre);
-			fprintf(newFile, "| %-20s | %-30s |\n", "Возрастной рейтинг", game.age_rating);
-			fprintf(newFile, "| %-20s | %-30.1f%% |\n", "Скидка", game.discount);
-			fprintf(newFile, "| %-20s | %-30s |\n", "Артикул", game.article);
-			fprintf(newFile, "+----------------------+--------------------------------+\n");
+			
 
 			// Также выводим на экран
-			printf("+----------------------+--------------------------------+\n");
-			printf("| %-20s | %-30s |\n", "Название", game.name);
-			printf("| %-20s | %-30s |\n", "Платформа", game.platform);
-			printf("| %-20s | %-30hu |\n", "Год выпуска", game.release_year);
-			printf("| %-20s | %-30.2f руб. |\n", "Цена", game.price);
-			printf("| %-20s | %-30s |\n", "Состояние", game.is_used ? "Б/У" : "Новый");
-			printf("| %-20s | %-30u |\n", "Количество", game.count);
-			printf("| %-20s | %-30s |\n", "Жанр", game.genre);
-			printf("| %-20s | %-30s |\n", "Возрастной рейтинг", game.age_rating);
-			printf("| %-20s | %-30.1f%% |\n", "Скидка", game.discount);
-			printf("| %-20s | %-30s |\n", "Артикул", game.article);
-			printf("+----------------------+--------------------------------+\n");
-		}
+			
+		
 	}
 
 	fclose(origFile);
@@ -248,6 +226,24 @@ int select_game_by_year_simple(const char* orig_file_name, const char* new_file_
 	// Если были отобраны игры
 	return game_found;
 }
+
+void print_game_disc(const game_t game) {
+	char price_str[20], date_str[12];
+
+	// Форматируем строку с датой
+	sprintf(date_str, "%02hu-%02hu-%04hu", game.release_date.day, game.release_date.month, game.release_date.year);
+	// Форматируем цену
+	float final_price = game.price * (1 - (game.discount / 100.0));
+	sprintf(price_str, "%.2f", final_price);
+
+	// Вывод данных
+	printf("| %-20s | %-9s | %-11s | %-9s | %-10u | %-9s | %-7s | %-9hu | %-8s | %-14s |\n",
+		game.name, game.platform, date_str, price_str, game.count,
+		game.genre, game.age_rating, game.discount, game.format, game.article);
+
+	printf("+----------------------+-----------+-------------+-----------+------------+-----------+---------+-----------+----------+----------------+\n");
+}
+
 
 void fill_game_data(game_t* game) {
 	printf("\n Введите данные об игре:\n\n");
@@ -272,8 +268,15 @@ void fill_game_data(game_t* game) {
 	fgets(game->format, sizeof(game->format), stdin);
 	game->format[strcspn(game->format, "\n")] = '\0';
 
-	printf(" Дата релиза = ");
-	scanf_s("%hu", &game->release_year);
+	printf(" Дата релиза \n");
+	printf(" Год = ");
+	scanf_s("%hu", &game->release_date.year);
+	getchar();
+	printf(" Месяц = ");
+	scanf_s("%hu", &game->release_date.month);
+	getchar();
+	printf(" День = ");
+	scanf_s("%hu", &game->release_date.day);
 	getchar();
 
 	printf(" Артикул = ");
@@ -285,18 +288,12 @@ void fill_game_data(game_t* game) {
 	getchar();
 
 	printf(" Скидка = ");
-	scanf_s("%f", &game->discount);
+	scanf_s("%hu", &game->discount);
 	getchar();
 
 	printf(" Количество = ");
 	scanf_s("%u", &game->count);
 	getchar();
-
-	printf(" Состояние (0 - Новая, 1 - Б/У) = ");
-	int is_used_int;
-	scanf_s("%d", &is_used_int);
-	getchar();
-	game->is_used = is_used_int;
 }
 
 int print_data_from_file(const char* file_name) {
@@ -314,6 +311,7 @@ int print_data_from_file(const char* file_name) {
 	return SUCCESS;
 }
 
+/*
 // New Func
 int write_data_to_file(const char* file_name, const char* mode) {
 	FILE* file;
@@ -359,12 +357,12 @@ int write_data_to_file(const char* file_name, const char* mode) {
 	fclose(file);
 
 	return SUCCESS;
-}
+}*/
 
-void write_data_to_file_simple() {
+void write_data_to_file_simple(const char* mode) {
 	FILE* file;
 
-	fopen_s(&file, "simple_file.txt", "w");
+	fopen_s(&file, "simple_file.txt", mode);
 
 	char answ = 'y';
 	while (answ != 'n') {
@@ -373,32 +371,33 @@ void write_data_to_file_simple() {
 		game_t game;
 		fill_game_data(&game);
 
-		char price_str[50], discount_str[50];
+		//char price_str[50];
+		char price_str[20], date_str[12];
 
-		// Формируем строки для цены и скидки с единицами измерения
+		// Форматируем строку с датой
+		sprintf(date_str, "%02hu-%02hu-%04hu", game.release_date.day, game.release_date.month, game.release_date.year);
+
+		// Формируем строки для цены
 		float final_price = game.discount == 0 ? game.price :
 			game.price * (1 - (game.discount / 100));
-		sprintf_s(price_str, "%.2f руб.", final_price);
-		sprintf_s(discount_str, "%.1f%%", game.discount);
+		sprintf(price_str, "%.2f", final_price);
 
-		fprintf_s(file, "\n");
-		fprintf_s(file, "%-30s\n", game.name);
-		fprintf_s(file, "%-30s\n", game.platform);
-		fprintf_s(file, "%-30hu\n", game.release_year);
-		fprintf_s(file, "%-30s\n", price_str);
-		fprintf_s(file, "%-30s\n", game.is_used ? "Б/У" : "Новый");
-		fprintf_s(file, "%-30u\n", game.count);
-		fprintf_s(file, "%-30s\n", game.genre);
-		fprintf_s(file, "%-30s\n", game.age_rating);
-		fprintf_s(file, "%-30s\n", discount_str);
-		fprintf_s(file, "%-30s\n", game.format);
-		fprintf_s(file, "%-30s\n", game.article);
+		//fprintf_s(file, "\n");
+		fprintf_s(file, "%-20s ", game.name);
+		fprintf_s(file, "%-9s ", game.platform);
+		fprintf_s(file, "%-9s ", game.genre);
+		fprintf_s(file, "%-7s ", game.age_rating);
+		fprintf_s(file, "%-8s ", game.format);
+		fprintf_s(file, "%-11s ", date_str);
+		fprintf_s(file, "%-14s ", game.article);
+		fprintf_s(file, "%-9s ", price_str);
+		fprintf_s(file, "%-9hu ", game.discount);
+		fprintf_s(file, "%-10u\n", game.count);
 
 		printf("\n Хотите записать что-то ещё (y/n)? ");
 		answ = getchar();
 		getchar();
 	}
-	
 }
 
 //TODO: поменять порядок заполнения полей структуры

@@ -13,11 +13,11 @@ void main()
         "RPG",
         "18+",
         "DVD",
-        "W3-PC-2015",
         1000.0,
         0,
-        10,
         {2015, 8, 15},
+        10,
+        "W3-PC-2015",
     };
 
     game_t game2 = {
@@ -25,12 +25,12 @@ void main()
         "PS4",
         "Shooter",
         "18+",
-        "Blu-Ray",
-        "BI-PS4-2013",
+        "Blue-Ray",
         500.0,
-        30.0,
-        5,
+        30,
         {2013, 5, 10},
+        5,
+        "BI-PS4-2013",
     };
 
     //game_t game = { 0 };
@@ -40,6 +40,7 @@ void main()
     print_game_disk(game1);
     print_game_disk(game2);
 }
+
 void fill_game_data(game_t* game) {
     printf("\n Введите данные об игре:\n\n");
 
@@ -63,6 +64,14 @@ void fill_game_data(game_t* game) {
     fgets(game->format, sizeof(game->format), stdin);
     game->format[strcspn(game->format, "\n")] = '\0';
 
+    printf(" Цена = ");
+    scanf_s("%f", &game->price);
+    getchar();
+
+    printf(" Скидка = ");
+    scanf_s("%hu", &game->discount);
+    getchar();
+
     printf(" Дата релиза \n");
     printf(" Год = ");
     scanf_s("%hu", &game->release_date.year);
@@ -74,44 +83,36 @@ void fill_game_data(game_t* game) {
     scanf_s("%hu", &game->release_date.day);
     getchar();
 
-    printf(" Артикул = ");
-    fgets(game->article, sizeof(game->article), stdin);
-    game->article[strcspn(game->article, "\n")] = '\0';
-
-    printf(" Цена = ");
-    scanf_s("%f", &game->price);
-    getchar();
-
-    printf(" Скидка = ");
-    scanf_s("%hu", &game->discount);
-    getchar();
-
     printf(" Количество = ");
     scanf_s("%u", &game->count);
     getchar();
+
+    printf(" Артикул = ");
+    fgets(game->article, sizeof(game->article), stdin);
+    game->article[strcspn(game->article, "\n")] = '\0';
 }
 
 void print_game_disk_header() {
-    printf("+----------------------+-----------+-------------+-----------+------------+-----------+---------+-----------+----------+----------------+\n");
-    printf("| Название             | Платформа | Дата релиза | Цена, руб | Кол-во, шт | Жанр      | Возраст | Скидка, %% | Формат   | Артикул        |\n");
-    printf("+----------------------+-----------+-------------+-----------+------------+-----------+---------+-----------+----------+----------------+\n");
+    printf("+----------------------+-----------+-----------+---------+----------+-------------+-----------+-------------+------------+----------------+\n");
+    printf("| Название             | Платформа | Жанр      | Возраст | Формат   | Цена, руб   | Скидка, %% | Дата релиза | Кол-во, шт | Артикул        |\n");
+    printf("+----------------------+-----------+-----------+---------+----------+-------------+-----------+-------------+------------+----------------+\n");
 }
 
-void print_game_disk(const game_t disc) {
-    char price_str[20], date_str[12];
+void print_game_disk(const game_t game) {
+    char date_str[12];
 
     // Форматируем строку с датой
-    sprintf(date_str, "%02hu-%02hu-%04hu", disc.release_date.day, disc.release_date.month, disc.release_date.year);
+    sprintf_s(date_str, "%02hu-%02hu-%04hu", game.release_date.day, game.release_date.month, game.release_date.year);
+    
     // Форматируем цену
-    float final_price = disc.price * (1 - (disc.discount / 100.0));
-    sprintf(price_str, "%.2f", final_price);
+    float final_price = game.price * (1 - (game.discount / 100.0));
 
     // Вывод данных
-    printf("| %-20s | %-9s | %-11s | %-9s | %-10u | %-9s | %-7s | %-9hu | %-8s | %-14s |\n",
-        disc.name, disc.platform, date_str, price_str, disc.count,
-        disc.genre, disc.age_rating, disc.discount, disc.format, disc.article);
+    printf("| %-20s | %-9s | %-9s | %-7s | %-8s | %-11.2f | %-9hu | %-11s | %-10u | %-14s |\n",
+        game.name, game.platform, game.genre, game.age_rating, game.format,
+        game.price, game.discount, date_str, game.count, game.article);
 
-    printf("+----------------------+-----------+-------------+-----------+------------+-----------+---------+-----------+----------+----------------+\n");
+    printf("+----------------------+-----------+-----------+---------+----------+-------------+-----------+-------------+------------+----------------+\n");
 }
 
 /*
@@ -139,3 +140,4 @@ void print_game_disk(const game_t disc) {
     printf("| %-20s | %-30s |\n", "Артикул", disc.article);
     printf("+----------------------+--------------------------------+\n");
 }*/
+//TODO: Add shifts before output?
