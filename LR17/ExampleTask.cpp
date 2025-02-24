@@ -213,7 +213,7 @@ int obryo()
 	{
 		fscanf(tf1, "%s %s %d ", &b.name, &b.author, &b.year);
 
-		if ((2021 - b.year) > yo)
+		if ((2025 - b.year) >= yo)
 		{
 			fprintf(tf2, " \n  %15s %15s %4d", b.name, b.author, b.year);
 			printf("\n| % 15s | % 15s | % 9d | ", b.name, b.author, b.year);

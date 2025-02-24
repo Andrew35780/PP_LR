@@ -110,7 +110,7 @@ void print_game_data(const game_t game) {
     // Вывод данных
     printf("| %-20s | %-9s | %-9s | %-7s | %-8s | %-11.2f | %-9hu | %-11s | %-10u | %-14s |\n",
         game.name, game.platform, game.genre, game.age_rating, game.format,
-        game.price, game.discount, date_str, game.count, game.article);
+        final_price, game.discount, date_str, game.count, game.article);
 
     printf("+----------------------+-----------+-----------+---------+----------+-------------+-----------+-------------+------------+----------------+\n");
 }

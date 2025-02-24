@@ -1,9 +1,10 @@
 #include "Task.h"
 
 //int select_game_by_year(const char* orig_file_name, const char* new_file_name);
-void write_data_to_file_simple(const char* mode);
+
+int write_data_to_file_simple(const char* file_name, const char* mode);
 int select_game_by_year_simple(const char* orig_file_name, const char* new_file_name);
-void print_game_disc(const game_t disc);
+void print_game_data(const game_t game);
 
 int main()
 {
@@ -59,12 +60,12 @@ int main()
 		case WriteData:
 			//write_data_to_file("file.txt", "w");
 
-			write_data_to_file_simple("w");
+			write_data_to_file_simple("simple_file.txt", "w");
 			break;
 		case AddData:
 			//write_data_to_file("simple_file.txt", "a");
 
-			write_data_to_file_simple("a");
+			write_data_to_file_simple("simple_file.txt", "a");
 			break;
 		case ReadData:
 			system("cls");
@@ -190,33 +191,33 @@ int select_game_by_year_simple(const char* orig_file_name, const char* new_file_
 	scanf_s("%hu", &sort_year);
 
 	game_t game = { 0 };
+	char date_str[12];
 	int game_found = 0;
 
 	// Читаем игры из исходного файла
-	while (!feof(origFile))
+	while (fscanf(origFile, "%s %s %s %s %s %f %hu %s %u %s",
+		game.name, game.platform, game.genre, game.age_rating,
+		game.format, &game.price, &game.discount, date_str,
+		&game.count, game.article) == 10)
 	{
-		char price_str[20], date_str[12];
-
-		fscanf(origFile, "%s %s %s %s %s %s %s %f %hu %u", 
-			game.name, game.platform, game.genre, game.age_rating, 
-			game.format, date_str, game.article, &game.price, 
-			&game.discount, &game.count); // Почему такой порядок??
-
-		printf("\n+----------------------+-----------+-------------+-----------+------------+-----------+---------+-----------+----------+----------------+\n");
 
 		// Преобразуем строку с датой в структуру
 		sscanf_s(date_str, "%hu-%hu-%hu", &game.release_date.day, &game.release_date.month, &game.release_date.year);
 
-		print_game_disc(game);
 		// Проверяем, если год релиза игры больше указанного
-		
-
+		if (game.release_date.year > sort_year) {
 			// Записываем отфильтрованные игры в новый файл
-			
+			fprintf(newFile, "%s %s %s %s %s %02u-%02u-%04u %s %.2f %hu %u\n",
+				game.name, game.platform, game.genre, game.age_rating, game.format,
+				game.release_date.day, game.release_date.month, game.release_date.year,
+				game.article, game.price, game.discount, game.count);
 
 			// Также выводим на экран
-			
-		
+			printf("\n+----------------------+-----------+-------------+-----------+------------+-----------+---------+-----------+----------+----------------+\n");
+			print_game_data(game);
+
+			game_found = 1;
+		}
 	}
 
 	fclose(origFile);
@@ -226,21 +227,21 @@ int select_game_by_year_simple(const char* orig_file_name, const char* new_file_
 	return game_found;
 }
 
-void print_game_disc(const game_t game) {
-	char price_str[20], date_str[12];
+void print_game_data(const game_t game) {
+	char date_str[12];
 
 	// Форматируем строку с датой
-	sprintf(date_str, "%02hu-%02hu-%04hu", game.release_date.day, game.release_date.month, game.release_date.year);
+	sprintf_s(date_str, "%02hu-%02hu-%04hu", game.release_date.day, game.release_date.month, game.release_date.year);
+
 	// Форматируем цену
 	float final_price = game.price * (1 - (game.discount / 100.0));
-	sprintf(price_str, "%.2f", final_price);
 
 	// Вывод данных
-	printf("| %-20s | %-9s | %-11s | %-9s | %-10u | %-9s | %-7s | %-9hu | %-8s | %-14s |\n",
-		game.name, game.platform, date_str, price_str, game.count,
-		game.genre, game.age_rating, game.discount, game.format, game.article);
+	printf("| %-20s | %-9s | %-9s | %-7s | %-8s | %-11.2f | %-9hu | %-11s | %-10u | %-14s |\n",
+		game.name, game.platform, game.genre, game.age_rating, game.format,
+		game.price, game.discount, date_str, game.count, game.article);
 
-	printf("+----------------------+-----------+-------------+-----------+------------+-----------+---------+-----------+----------+----------------+\n");
+	printf("+----------------------+-----------+-----------+---------+----------+-------------+-----------+-------------+------------+----------------+\n");
 }
 
 
@@ -267,6 +268,14 @@ void fill_game_data(game_t* game) {
 	fgets(game->format, sizeof(game->format), stdin);
 	game->format[strcspn(game->format, "\n")] = '\0';
 
+	printf(" Цена = ");
+	scanf_s("%f", &game->price);
+	getchar();
+
+	printf(" Скидка = ");
+	scanf_s("%hu", &game->discount);
+	getchar();
+
 	printf(" Дата релиза \n");
 	printf(" Год = ");
 	scanf_s("%hu", &game->release_date.year);
@@ -278,28 +287,22 @@ void fill_game_data(game_t* game) {
 	scanf_s("%hu", &game->release_date.day);
 	getchar();
 
-	printf(" Артикул = ");
-	fgets(game->article, sizeof(game->article), stdin);
-	game->article[strcspn(game->article, "\n")] = '\0';
-
-	printf(" Цена = ");
-	scanf_s("%f", &game->price);
-	getchar();
-
-	printf(" Скидка = ");
-	scanf_s("%hu", &game->discount);
-	getchar();
-
 	printf(" Количество = ");
 	scanf_s("%u", &game->count);
 	getchar();
+
+	printf(" Артикул = ");
+	fgets(game->article, sizeof(game->article), stdin);
+	game->article[strcspn(game->article, "\n")] = '\0';
 }
 
 int print_data_from_file(const char* file_name) {
 	FILE* file;
 
-	if (fopen_s(&file, file_name, "r") != 0)
+	if (fopen_s(&file, file_name, "r") != 0) {
+		printf("\n Ошибка открытия файла %s !\n", file_name);
 		return ERROR_FILE_OPPENING;
+	}
 
 	char buffer[256];
 	while (fgets(buffer, sizeof(buffer), file))
@@ -358,10 +361,13 @@ int write_data_to_file(const char* file_name, const char* mode) {
 	return SUCCESS;
 }*/
 
-void write_data_to_file_simple(const char* mode) {
+int write_data_to_file_simple(const char* file_name, const char* mode) {
 	FILE* file;
 
-	fopen_s(&file, "simple_file.txt", mode);
+	if (fopen_s(&file, file_name, mode) != 0) {
+		printf("\n Ошибка открытия файла %s !\n", file_name);
+		return ERROR_FILE_OPPENING;
+	}
 
 	char answ = 'y';
 	while (answ != 'n') {
@@ -370,16 +376,12 @@ void write_data_to_file_simple(const char* mode) {
 		game_t game;
 		fill_game_data(&game);
 
-		//char price_str[50];
-		char price_str[20], date_str[12];
+		char date_str[12];
 
 		// Форматируем строку с датой
-		sprintf(date_str, "%02hu-%02hu-%04hu", game.release_date.day, game.release_date.month, game.release_date.year);
-
-		// Формируем строки для цены
-		float final_price = game.discount == 0 ? game.price :
-			game.price * (1 - (game.discount / 100));
-		sprintf(price_str, "%.2f", final_price);
+		sprintf_s(date_str, "%02hu-%02hu-%04hu", game.release_date.day, game.release_date.month, game.release_date.year);
+		// Формируем цену со скидкой
+		float final_price = game.price * (1 - (game.discount / 100.0));
 
 		//fprintf_s(file, "\n");
 		fprintf_s(file, "%-20s ", game.name);
@@ -387,19 +389,23 @@ void write_data_to_file_simple(const char* mode) {
 		fprintf_s(file, "%-9s ", game.genre);
 		fprintf_s(file, "%-7s ", game.age_rating);
 		fprintf_s(file, "%-8s ", game.format);
-		fprintf_s(file, "%-11s ", date_str);
-		fprintf_s(file, "%-14s ", game.article);
-		fprintf_s(file, "%-9s ", price_str);
+		fprintf_s(file, "%-11.2f ", final_price);
 		fprintf_s(file, "%-9hu ", game.discount);
-		fprintf_s(file, "%-10u\n", game.count);
+		fprintf_s(file, "%-11s ", date_str);
+		fprintf_s(file, "%-10u ", game.count);
+		fprintf_s(file, "%-14s\n", game.article);
 
 		printf("\n Хотите записать что-то ещё (y/n)? ");
 		answ = getchar();
 		getchar();
 	}
+
+	return SUCCESS;
 }
 
-//TODO: поменять порядок заполнения полей структуры
+//TODO: 
+// Поменять порядок заполнения полей структуры - СДЕЛАЛ
+
 // Добавить сообщение об ошибке открытия файла в функциях!
 // Возможно, что ошибка чтения из файла в: неправильных спецификаторах, неправильных размерах или их наличии, нахождение данных на разных строках, неправильное количество форматных строк и аргументов для записи, попытка записи строк в числовые поля
 // Скорее всего, придётся записывать в файл данные в "сыром" виде, а потом добавлять их к таблице на выводе!
