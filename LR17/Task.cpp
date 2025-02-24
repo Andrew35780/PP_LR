@@ -16,11 +16,11 @@ int main()
 		"RPG",
 		"18+",
 		"DVD",
-		{2015, 8, 15},
-		"W3-PC-2015",
 		1000.0,
 		0,
+		{2015, 8, 15},
 		10,
+		"W3-PC-2015",
 	};
 
 	game_t game2 = {
@@ -29,11 +29,11 @@ int main()
 		"Shooter",
 		"18+",
 		"Blue-Ray",
-		{2013, 5, 10},
-		"BI-PS4-2013",
 		500.0,
-		30.0,
+		30,
+		{2013, 5, 10},
 		5,
+		"BI-PS4-2013",
 	};
 
 	//game_t game3; //game_temp for writing in cycle
@@ -58,10 +58,12 @@ int main()
 		{
 		case WriteData:
 			//write_data_to_file("file.txt", "w");
+
 			write_data_to_file_simple("w");
 			break;
 		case AddData:
 			//write_data_to_file("simple_file.txt", "a");
+
 			write_data_to_file_simple("a");
 			break;
 		case ReadData:
@@ -72,6 +74,7 @@ int main()
 			break;
 		case SelectByYear:
 			//select_game_by_year("file.txt", "sorted_file.txt");
+
 			select_game_by_year_simple("simple_file.txt", "sorted_file.txt");
 			system("pause");
 			break;
@@ -81,10 +84,6 @@ int main()
 			printf("\n Вы ввели несуществующую операцию!\n");
 		}
 	}
-
-	//write_data_to_file("file.txt", game1, "w");
-	//write_data_to_file("file.txt", game2, "a");
-	//print_data_from_file("file.txt");
 
 	return 0;
 }

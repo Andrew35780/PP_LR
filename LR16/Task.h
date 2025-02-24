@@ -23,5 +23,5 @@ typedef struct game_t {
 };
 
 void fill_game_data(game_t* game);
-void print_game_disk_header();
-void print_game_disk(const game_t disc);
+void print_game_table_header();
+void print_game_data(const game_t game);

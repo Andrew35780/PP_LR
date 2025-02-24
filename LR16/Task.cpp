@@ -36,9 +36,9 @@ void main()
     //game_t game = { 0 };
     //fill_game_data(&game);
 
-    print_game_disk_header();
-    print_game_disk(game1);
-    print_game_disk(game2);
+    print_game_table_header();
+    print_game_data(game1);
+    print_game_data(game2);
 }
 
 void fill_game_data(game_t* game) {
@@ -92,13 +92,13 @@ void fill_game_data(game_t* game) {
     game->article[strcspn(game->article, "\n")] = '\0';
 }
 
-void print_game_disk_header() {
+void print_game_table_header() {
     printf("+----------------------+-----------+-----------+---------+----------+-------------+-----------+-------------+------------+----------------+\n");
     printf("| Название             | Платформа | Жанр      | Возраст | Формат   | Цена, руб   | Скидка, %% | Дата релиза | Кол-во, шт | Артикул        |\n");
     printf("+----------------------+-----------+-----------+---------+----------+-------------+-----------+-------------+------------+----------------+\n");
 }
 
-void print_game_disk(const game_t game) {
+void print_game_data(const game_t game) {
     char date_str[12];
 
     // Форматируем строку с датой
