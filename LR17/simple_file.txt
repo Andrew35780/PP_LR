@@ -1,2 +1,5 @@
 Witcher              PC        RPG       18+     DVD      250.00      0         10-02-2015  30         W-PC-2015     
 GTA                  XBOX      Action    18+     CD       315.00      10        29-08-2013  50         G-XB-2013     
+Bioshock             PS4       Shooter   16+     CD       135.00      10        12-05-2013  50         B-PS4-2013    
+Dota                 PC        MOBA      18+     18+      50.00       0         15-10-2010  100        D-PC-2010     
+CS                   PC        Shooter   16+     CD       80.00       0         05-06-2012  75         CS-PC-2012    
