@@ -16,9 +16,10 @@ typedef enum {
 	FinishWork = 6,
 } operation;
 
-//void fill_game_data(game_t* game);
+int select_game_by_year(const char* orig_file_name, const char* new_file_name);
 void print_game_data(const game_t game);
+void print_game_table_header();
+void fill_game_data(game_t* game);
 int print_data_from_file(const char* file_name);
 int write_data_to_file(const char* file_name, const char* mode);
-int select_game_by_year(const char* orig_file_name, const char* new_file_name);
 int find_record_in_file_by_name(const char* file_name);

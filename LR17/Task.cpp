@@ -3,36 +3,7 @@
 int main()
 {
 	setlocale(LC_CTYPE, "");
-	//system("color f0");
-
-	game_t game1 = {
-		"The Witcher 3",
-		"PC",
-		"RPG",
-		"18+",
-		"DVD",
-		1000.0,
-		0,
-		{2015, 8, 15},
-		10,
-		"W3-PC-2015",
-	};
-
-	game_t game2 = {
-		"Bioshock Infinite",
-		"PS4",
-		"Shooter",
-		"18+",
-		"Blue-Ray",
-		500.0,
-		30,
-		{2013, 5, 10},
-		5,
-		"BI-PS4-2013",
-	};
-
-	//game_t game3; //game_temp for writing in cycle
-	//fill_game_data(&game3);
+	system("color f0");
 
 	while (1) {
 		system("cls");
@@ -64,6 +35,7 @@ int main()
 			system("pause");
 			break;
 		case SelectByYear:
+			system("cls");
 			select_game_by_year("simple_file.txt", "sorted_file.txt");
 			system("pause");
 			break;
@@ -124,7 +96,8 @@ int select_game_by_year(const char* orig_file_name, const char* new_file_name) {
 				game.article, game.price, game.discount, game.count);
 
 			// Также выводим на экран
-			printf("\n+----------------------+-----------+-------------+-----------+------------+-----------+---------+-----------+----------+----------------+\n");
+			printf("\n");
+			print_game_table_header();
 			print_game_data(game);
 
 			game_found = 1;
@@ -229,6 +202,91 @@ int print_data_from_file(const char* file_name) {
 	return SUCCESS;
 }
 
+int write_data_to_file(const char* file_name, const char* mode) {
+	FILE* file;
+
+	if (fopen_s(&file, file_name, mode) != 0) {
+		printf("\n Ошибка открытия файла %s !\n", file_name);
+		return ERROR_FILE_OPPENING;
+	}
+
+	char answ = 'y';
+	while (answ != 'n') {
+		system("cls");
+
+		game_t game;
+		fill_game_data(&game);
+
+		char date_str[12];
+
+		// Форматируем строку с датой
+		sprintf_s(date_str, "%02hu-%02hu-%04hu", game.release_date.day, game.release_date.month, game.release_date.year);
+		// Формируем цену со скидкой
+		float final_price = game.price * (1 - (game.discount / 100.0));
+
+		//fprintf_s(file, "\n");
+		fprintf_s(file, "%-20s ", game.name);
+		fprintf_s(file, "%-9s ", game.platform);
+		fprintf_s(file, "%-9s ", game.genre);
+		fprintf_s(file, "%-7s ", game.age_rating);
+		fprintf_s(file, "%-8s ", game.format);
+		fprintf_s(file, "%-11.2f ", final_price);
+		fprintf_s(file, "%-9hu ", game.discount);
+		fprintf_s(file, "%-11s ", date_str);
+		fprintf_s(file, "%-10u ", game.count);
+		fprintf_s(file, "%-14s\n", game.article);
+
+		printf("\n Хотите записать что-то ещё (y/n)? ");
+		answ = getchar();
+		getchar();
+	}
+
+	fclose(file);
+
+	return SUCCESS;
+}
+
+int find_record_in_file_by_name(const char* file_name) {
+	FILE* file;
+
+	if (fopen_s(&file, file_name, "r") != 0) {
+		printf("\n Ошибка открытия файла %s !\n", file_name);
+		return ERROR_FILE_OPPENING;
+	}
+
+	game_t game = { 0 };
+	int game_found = 0;
+	char date_str[12];
+
+	char game_name[100];
+	printf("\n Введите название искомой игры: ");
+	fgets(game_name, sizeof(game_name), stdin);
+	game_name[strcspn(game_name, "\n")] = '\0';
+
+	while (fscanf(file, "%s %s %s %s %s %f %hu %s %u %s",
+		game.name, game.platform, game.genre, game.age_rating,
+		game.format, &game.price, &game.discount, date_str,
+		&game.count, game.article) == 10)
+	{
+		// Преобразуем строку с датой в структуру
+		sscanf_s(date_str, "%hu-%hu-%hu", &game.release_date.day, &game.release_date.month, &game.release_date.year);
+
+		// Проверяем, если название игры совпадает
+		if (strcmp(game.name, game_name) == 0) {
+			// Также выводим на экран
+			printf("\n");
+			print_game_table_header();
+			print_game_data(game);
+
+			game_found = SUCCESS;
+
+			break;
+		}
+	}
+
+	return game_found;
+}
+
 /*
 // New Func
 int write_data_to_file(const char* file_name, const char* mode) {
@@ -276,96 +334,3 @@ int write_data_to_file(const char* file_name, const char* mode) {
 
 	return SUCCESS;
 }*/
-
-int write_data_to_file(const char* file_name, const char* mode) {
-	FILE* file;
-
-	if (fopen_s(&file, file_name, mode) != 0) {
-		printf("\n Ошибка открытия файла %s !\n", file_name);
-		return ERROR_FILE_OPPENING;
-	}
-
-	char answ = 'y';
-	while (answ != 'n') {
-		system("cls");
-
-		game_t game;
-		fill_game_data(&game);
-
-		char date_str[12];
-
-		// Форматируем строку с датой
-		sprintf_s(date_str, "%02hu-%02hu-%04hu", game.release_date.day, game.release_date.month, game.release_date.year);
-		// Формируем цену со скидкой
-		float final_price = game.price * (1 - (game.discount / 100.0));
-
-		//fprintf_s(file, "\n");
-		fprintf_s(file, "%-20s ", game.name);
-		fprintf_s(file, "%-9s ", game.platform);
-		fprintf_s(file, "%-9s ", game.genre);
-		fprintf_s(file, "%-7s ", game.age_rating);
-		fprintf_s(file, "%-8s ", game.format);
-		fprintf_s(file, "%-11.2f ", final_price);
-		fprintf_s(file, "%-9hu ", game.discount);
-		fprintf_s(file, "%-11s ", date_str);
-		fprintf_s(file, "%-10u ", game.count);
-		fprintf_s(file, "%-14s\n", game.article);
-
-		printf("\n Хотите записать что-то ещё (y/n)? ");
-		answ = getchar();
-		getchar();
-	}
-
-	fclose(file);
-
-	return SUCCESS;
-}
-
-int find_record_in_file_by_name(const char* file_name ) {
-	FILE* file;
-
-	if (fopen_s(&file, file_name, "r") != 0) {
-		printf("\n Ошибка открытия файла %s !\n", file_name);
-		return ERROR_FILE_OPPENING;
-	}
-
-	game_t game = { 0 };
-	int game_found = 0;
-	char date_str[12];
-	
-	char game_name[100];
-	printf("\nВведите название искомой игры: ");
-	fgets(game_name, sizeof(game_name), stdin);
-	game_name[strcspn(game_name, "\n")] = '\0';
-
-	while (fscanf(file, "%s %s %s %s %s %f %hu %s %u %s",
-		game.name, game.platform, game.genre, game.age_rating,
-		game.format, &game.price, &game.discount, date_str,
-		&game.count, game.article) == 10)
-	{
-		// Преобразуем строку с датой в структуру
-		sscanf_s(date_str, "%hu-%hu-%hu", &game.release_date.day, &game.release_date.month, &game.release_date.year);
-
-		// Проверяем, если название игры совпадает
-		if (strcmp(game.name, game_name) == 0) {
-
-			// Также выводим на экран
-			printf("\n");
-			print_game_table_header();
-			print_game_data(game);
-
-			game_found = SUCCESS;
-
-			break;
-		}
-	}
-
-	return game_found;
-}
-
-//TODO: 
-// Поменять порядок заполнения полей структуры - СДЕЛАЛ
-
-// Добавить сообщение об ошибке открытия файла в функциях!
-// Возможно, что ошибка чтения из файла в: неправильных спецификаторах, неправильных размерах или их наличии, нахождение данных на разных строках, неправильное количество форматных строк и аргументов для записи, попытка записи строк в числовые поля
-// Скорее всего, придётся записывать в файл данные в "сыром" виде, а потом добавлять их к таблице на выводе!
