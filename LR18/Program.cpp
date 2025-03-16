@@ -11,7 +11,7 @@ namespace LR18 //Название пространства имен необходимо посмотреть в ранее создан
     {
         System::Windows::Forms::Application::EnableVisualStyles(); //Включает визуальные стили для приложения.                   
         System::Windows::Forms::Application::SetCompatibleTextRenderingDefault(false);//Тип отрисовки текста
-        System::Windows::Forms::Application::Run(gcnew Task2()); //Запуск формы
+        System::Windows::Forms::Application::Run(gcnew Task1()); //Запуск формы
 
         return 0;
     }
